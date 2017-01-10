@@ -10,10 +10,6 @@ public class FilterChain implements Filter{
 	 * 启动过的过滤器数量
 	 */
 	private int filterCount=0;
-	/**
-	 * 是否成功处理所有
-	 */
-	private boolean isSuccess=true;
 	
 	/**
 	 * 处理完其中的过滤器链后接下来要处理的过滤器,也就是要返回之前的过滤器继续处理
@@ -50,7 +46,6 @@ public class FilterChain implements Filter{
 				//判断当前要处理的是过滤器
 				//计算是第几个处理器 
 				this.addFilterCount(1);
-				System.out.println(nowFilter);
 				nowFilter.doFilter(request, response, this);
 			}
 		}
