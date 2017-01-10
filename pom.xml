@@ -8,5 +8,6 @@
   	<module>httpclient-util</module>
   	<module>freemarker-util</module>
   	<module>filter-util</module>
+  	<module>encrypt-util</module>
   </modules>
 </project>
