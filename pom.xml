@@ -9,5 +9,6 @@
   	<module>freemarker-util</module>
   	<module>filter-util</module>
   	<module>encrypt-util</module>
+  	<module>javamail-util</module>
   </modules>
 </project>
