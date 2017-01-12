@@ -1,12 +1,15 @@
 package com.linzaixian.util.javamail;
-
+/**
+ * QQ邮箱的封装
+ * @author linzaixian
+ *
+ */
 public class QQMailUtil extends JavaMailUtil{
 	
 	/**
 	 * 
 	 * @param fromAddress  发件人邮箱
 	 * @param password  发件人密码
-	 * @param isSSL
 	 */
 	public QQMailUtil(String fromAddress,String password) {
 		super("smtp.qq.com", 465, fromAddress, fromAddress, password, true);
