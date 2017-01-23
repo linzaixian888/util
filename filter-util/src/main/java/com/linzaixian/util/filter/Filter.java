@@ -1,5 +1,5 @@
 package com.linzaixian.util.filter;
 
-public interface Filter {
-	void doFilter(Request request, Response response,FilterChain filterChain);
+public interface Filter<P extends Params> {
+	void doFilter(P params, FilterChain filterChain);
 }

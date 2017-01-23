@@ -19,7 +19,7 @@ public class FilterChain implements Filter{
 	    this.filters.add(filter);
 	    return this;
 	}
-	public void doFilter(Request request, Response response, FilterChain filterChain) {
+	public void doFilter(Params params,  FilterChain filterChain) {
 		FilterChain chain;
 		if(index>=filters.size()){
 			if(this.lastFilterChain!=null){
@@ -28,7 +28,7 @@ public class FilterChain implements Filter{
 				if(chain!=null){
 					//当前过滤器链处理完，把数量增加到之前的过滤器链，并继续运行之前的过滤器链
 					chain.addFilterCount(this.filterCount);
-					chain.doFilter(request, response, chain);
+					chain.doFilter(params, chain);
 					
 				}
 			}
@@ -40,13 +40,13 @@ public class FilterChain implements Filter{
 				//判断到要处理的是过滤器链
 				chain=(FilterChain) nowFilter;
 				chain.lastFilterChain=this;
-				chain.doFilter(request, response, chain);
+				chain.doFilter(params, chain);
 				
 			}else {
 				//判断当前要处理的是过滤器
 				//计算是第几个处理器 
 				this.addFilterCount(1);
-				nowFilter.doFilter(request, response, this);
+				nowFilter.doFilter(params, this);
 			}
 		}
 	    
