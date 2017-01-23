@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.linzaixian.util</groupId>
+		<artifactId>util</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>com.linzaixian.util.dbmeta</groupId>
+	<artifactId>db-meta-util</artifactId>
+	<properties>
+		<jdbc.driver.groupId>com.oracle</jdbc.driver.groupId>
+		<jdbc.driver.artifactId>ojdbc7</jdbc.driver.artifactId>
+		<jdbc.driver.version>12.1.0.2</jdbc.driver.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>${jdbc.driver.groupId}</groupId>
+			<artifactId>${jdbc.driver.artifactId}</artifactId>
+			<version>${jdbc.driver.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+</project>

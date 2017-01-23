@@ -10,5 +10,6 @@
   	<module>filter-util</module>
   	<module>encrypt-util</module>
   	<module>javamail-util</module>
+  	<module>db-meta-util</module>
   </modules>
 </project>
