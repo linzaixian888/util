@@ -9,9 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.linzaixian.util.dbmeta.pojo.ChildTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.linzaixian.util.dbmeta.pojo.Column;
-import com.linzaixian.util.dbmeta.pojo.ParentTable;
+import com.linzaixian.util.dbmeta.pojo.Index;
+import com.linzaixian.util.dbmeta.pojo.Key;
 import com.linzaixian.util.dbmeta.pojo.Table;
 
 /**
@@ -20,6 +23,7 @@ import com.linzaixian.util.dbmeta.pojo.Table;
  *
  */
 public class DbMetaUtil {
+	private static final Logger logger=LoggerFactory.getLogger(DbMetaUtil.class);
 	private  String driver;
 	private  String url;
 	private  String username;
@@ -32,6 +36,7 @@ public class DbMetaUtil {
 		this.username = username;
 		this.password = password;
 		this.schema = schema;
+		logger.debug("初始化,传递参数为driver:[{}],url:[{}],username:[{}],password:[{}],schema:[{}]",driver,url,username,password,schema);;
 	}
 	/**
 	 * 获取所有表
@@ -53,21 +58,30 @@ public class DbMetaUtil {
 	}
 	
 	/**
-	 * 获取id列
+	 * 获取只包含ID列名的ID列
 	 * @param db
 	 * @param schema
 	 * @param table
 	 * @return
 	 * @throws Exception
 	 */
-	private Column getIdColumn(DatabaseMetaData db,String schema,String table) throws Exception{
+	private Column getIdColumn(DatabaseMetaData db,String table) throws Exception{
 		//id列的处理
 		ResultSet idColumns=db.getPrimaryKeys(null, schema, table);
-		Column column=new Column();
+		Column column=null;
 		while(idColumns.next()){
+			column=new Column();
 			column.setColumnName(idColumns.getString("COLUMN_NAME"));
+			logger.debug("获取表{}的主键名为：{}",table,column.getColumnName());
 		}
 		idColumns.close();
+		if(logger.isDebugEnabled()){
+			if(column==null){
+				logger.debug("表{}没有设置主键",table);
+			}else{
+				logger.debug("表{}设置的主键名:{}",table,column.getColumnName());
+			}
+		}
 		return column;
 	}
 	/**
@@ -119,29 +133,24 @@ public class DbMetaUtil {
 		}finally{
 			closeConn(conn);
 		}
+		if(logger.isDebugEnabled()){
+			logger.debug("获取到{}张表",list.size());
+			for(Table table:list){
+				logger.debug("{}",table);
+			}
 			
+		}
 		return list;
 	}
+	
 	/**
-	 * 获取指定表
-	 * @param db
-	 * @param tableSet
-	 * @return
-	 * @throws Exception
+	 * 设置ID列和其他列
+	 * @param table
+	 * @param columns
+	 * @throws SQLException
 	 */
-	private Table getTable(DatabaseMetaData db,ResultSet tableSet) throws Exception{
-		String tableName=tableSet.getString("TABLE_NAME");
-		Table table=new Table(tableName);
-		table.setRemark(tableSet.getString("REMARKS"));
-		//对没有表注释的处理
-		if(table.getRemark()==null){
-			table.setRemark("");
-		}
-		//id列的处理
-		table.setIdColumn(getIdColumn(db, schema, tableName));
-		
-		ResultSet columns=db.getColumns(null, schema, tableName, null);
-		List<Column> columnList=table.getColumns();
+	private void setAllColumn(Table table ,ResultSet columns) throws SQLException{
+		logger.debug("开始获取所有列");
 		while(columns.next()){
 			Column column=new Column();
 			column.setTableCat(columns.getString("TABLE_CAT"));
@@ -165,39 +174,122 @@ public class DbMetaUtil {
 			column.setScopeTable(columns.getString("SCOPE_TABLE"));
 			column.setSourceDataType(columns.getShort("SOURCE_DATA_TYPE"));
 			column.setIsAutoincrement(columns.getString("IS_AUTOINCREMENT"));
-			if(table.getIdColumn()!=null&&column.getColumnName().equals(table.getIdColumn().getColumnName())){
-				table.setIdColumn(column);
-				continue;
-			}
-			columnList.add(column);
+			logger.debug("当前获取的列数据为{}",column);
+			table.appendColumn(column);
 		}
 		columns.close();
-		ResultSet parents=db.getImportedKeys(null, schema, tableName);
-		List<ParentTable> parentList=table.getParents();
-		while (parents.next()) {
-			ParentTable parentTable=new ParentTable();
-			parentTable.setTableName(parents.getString("PKTABLE_NAME"));
-			parentTable.setColumnName(parents.getString("FKCOLUMN_NAME"));
-			parentTable.setPkTable(parents.getString("PKTABLE_NAME"));
-			parentTable.setFkTable(parents.getString("FKTABLE_NAME"));
-			parentTable.setPkColumn(parents.getString("PKCOLUMN_NAME"));
-			parentTable.setFkColumn(parents.getString("FKCOLUMN_NAME"));
-			parentList.add(parentTable);
+	}
+	/**
+	 * 设置所有索引对象
+	 * @param table
+	 * @param indexes
+	 * @throws SQLException
+	 */
+	private void setAllIndex(Table table ,ResultSet indexes) throws SQLException{
+		logger.debug("开始获取所有索引");
+		while(indexes.next()){
+			table.appendIndex(getIndex(indexes));
 		}
+		indexes.close();
+	}
+	/**获取索引对象
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
+	private Index getIndex(ResultSet rs) throws SQLException{
+		Index index=new Index();
+		index.setTableCat(rs.getString("TABLE_CAT"));
+		index.setTableName(rs.getString("TABLE_SCHEM"));
+		index.setTableName(rs.getString("TABLE_NAME"));
+		index.setNonUnique(rs.getBoolean("NON_UNIQUE"));
+		index.setIndexQualifier(rs.getString("INDEX_QUALIFIER"));
+		index.setIndexName(rs.getString("INDEX_NAME"));
+		index.setType(rs.getShort("TYPE"));
+		index.setOrdinalPosition(rs.getShort("ORDINAL_POSITION"));
+		index.setColumnName(rs.getString("COLUMN_NAME"));
+		index.setAscOrDesc(rs.getString("ASC_OR_DESC"));
+		index.setCardinality(rs.getInt("CARDINALITY"));
+		index.setPages(rs.getInt("PAGES"));
+		index.setFilterCondition(rs.getString("FILTER_CONDITION"));
+		logger.debug("当前获取的索引数据为{}",index);
+		return index;
+	}
+	
+	
+	/**
+	 * 转换为主外键信息对象
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
+	private Key getKey(ResultSet rs) throws SQLException{
+	
+		Key key=new Key();
+		key.setPkTableCat(rs.getString("PKTABLE_CAT"));
+		key.setPkTableSchem(rs.getString("PKTABLE_SCHEM"));
+		key.setPkTableName(rs.getString("PKTABLE_NAME"));
+		key.setPkColumnName(rs.getString("PKCOLUMN_NAME"));
+		key.setFkTableCat(rs.getString("FKTABLE_CAT"));
+		key.setFkTableSchem(rs.getString("FKTABLE_SCHEM"));
+		key.setFkTableName(rs.getString("FKTABLE_NAME"));
+		key.setFkColumnName(rs.getString("FKCOLUMN_NAME"));
+		key.setKeySeq(rs.getShort("KEY_SEQ"));
+		key.setUpdateRule(rs.getShort("UPDATE_RULE"));
+		key.setDeleteRule(rs.getShort("DELETE_RULE"));
+		key.setFkName(rs.getString("FK_NAME"));
+		key.setPkName(rs.getString("PK_NAME"));
+		key.setDeferrability(rs.getShort("DEFERRABILITY"));
+		logger.debug("当前获取的主外键相关信息为{}",key);
+		return key;
+	}
+	
+	/**
+	 * 获取指定表
+	 * @param db
+	 * @param tableSet
+	 * @return
+	 * @throws Exception
+	 */
+	private Table getTable(DatabaseMetaData db,ResultSet tableSet) throws Exception{
+		String tableName=tableSet.getString("TABLE_NAME");
+		Table table=new Table(tableName);
+		logger.debug("获取的表名称:{}",table.getTableName());
+		table.setRemark(tableSet.getString("REMARKS"));
+		logger.debug("获取的表注释:{}",table.getRemark());
+		//对没有表注释的处理
+		if(table.getRemark()==null){
+			logger.debug("没有设置表注释，默认设为空字符串");
+			table.setRemark("");
+		}
+		//设置ID列的基本列名信息，方便后续填充
+		table.setIdColumn(getIdColumn(db, tableName));
+		//设置所有列的详细信息，包含ID列
+		ResultSet columns=db.getColumns(null, schema, tableName, null);
+		setAllColumn(table, columns);
+		
+		//设置主键表相关信息
+		ResultSet parents=db.getImportedKeys(null, schema, tableName);
+		while (parents.next()) {
+			logger.debug("获取主表(即父表)相关信息");
+			table.appendImportedKey(getKey(parents));
+		}
+		parents.close();
+		
+		//设置外键表相关信息
 		ResultSet childs=db.getExportedKeys(null, schema, tableName);
-		List<ChildTable> childTableList=table.getChilds();
 		while(childs.next()){
-			ChildTable childTable=new ChildTable();
-			childTable.setTableName(childs.getString("FKTABLE_NAME"));
-			childTable.setColumnName(childs.getString("FKCOLUMN_NAME"));
-			childTable.setPkTable(childs.getString("PKTABLE_NAME"));
-			childTable.setFkTable(childs.getString("FKTABLE_NAME"));
-			childTable.setPkColumn(childs.getString("PKCOLUMN_NAME"));
-			childTable.setFkColumn(childs.getString("FKCOLUMN_NAME"));
-			childTableList.add(childTable);
+			logger.debug("获取从表(即子表)相关信息");
+			table.appendExportedKey(getKey(childs));
 		}
 		childs.close();
+		
+		//设置索引信息
+		ResultSet indexes=db.getIndexInfo(null, schema, tableName, false, true);
+		setAllIndex(table, indexes);
+		
 		return table;
+		
 	}
 	/**
 	 * 获得数据库所有表信息
@@ -205,6 +297,7 @@ public class DbMetaUtil {
 	 * @throws Exception
 	 */
 	private  List<Table> getAllTable(Connection conn) throws Exception {
+		logger.debug("通过连接{}获取所有数据表信息",conn);
 		List<Table> tableList=new ArrayList<Table>();
 		DatabaseMetaData db=conn.getMetaData();
 		ResultSet tables=db.getTables(null, schema, null, new String[]{"TABLE"});
@@ -212,6 +305,13 @@ public class DbMetaUtil {
 			tableList.add(getTable(db, tables));
 		}
 		tables.close();
+		if(logger.isDebugEnabled()){
+			logger.debug("获取到{}张表",tableList.size());
+			for(Table table:tableList){
+				logger.debug("{}",table);
+			}
+			
+		}
 		return tableList;
 	}
 	
@@ -223,6 +323,7 @@ public class DbMetaUtil {
 	private Connection getConn() throws Exception{
 		Class.forName(driver);
 		Connection conn=DriverManager.getConnection(url, username, password);
+		logger.debug("获取连接:{}",conn);
 		return conn;
 	}
 	
@@ -233,9 +334,19 @@ public class DbMetaUtil {
 	private void closeConn(Connection conn){
 		try {
 			if(conn!=null){
+				logger.debug("关闭连接:{}",conn);
 				conn.close();
 			}
 		} catch (SQLException e) {
 		}
+	}
+	public static void main(String[] args) throws Exception {
+		String driver="oracle.jdbc.driver.OracleDriver";
+		String url="jdbc:oracle:thin:@192.168.1.250:1521:orcl";
+		String username="o2odev";
+		String password="o2odev";
+		String schema="O2ODEV";
+		DbMetaUtil util=new DbMetaUtil(driver, url, username, password, schema);
+		System.out.println(util.getAllTable());
 	}
 }
