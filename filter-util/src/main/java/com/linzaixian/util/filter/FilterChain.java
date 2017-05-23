@@ -5,10 +5,17 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * 过滤器链
+ * @author linzaixian
+ * @since 2017-05-24 00:46:04
+ */
 public class FilterChain implements Filter{
     private static Logger logger=LoggerFactory.getLogger(FilterChain.class);
 	private List<Filter> filters = new ArrayList<Filter>();
+	/**
+	 * 当前处理的过滤器和过滤器链的下标
+	 */
 	private int index = 0;
 	/**
 	 * 启动过的过滤器数量
@@ -32,6 +39,10 @@ public class FilterChain implements Filter{
 	    this.filters.add(filter);
 	    return this;
 	}
+	public void doFilter(Params params) throws Exception {
+	    doFilter(params,this);
+	}
+	
 	public void doFilter(Params params,  FilterChain filterChain) throws Exception {
 		FilterChain chain;
 		if(index>=filters.size()){
@@ -51,6 +62,8 @@ public class FilterChain implements Filter{
 			if(nowFilter instanceof FilterChain){
 				//判断到要处理的是过滤器链
 				chain=(FilterChain) nowFilter;
+				//初始化该过滤器链，使之可被重复添加处理
+				chain.index=0;
                 processFilterChain(params, chain);
 				
 			}else {
@@ -61,14 +74,24 @@ public class FilterChain implements Filter{
 		}
 	}
 	
-	
+	/**
+	 * 处理过滤器链
+	 * @param params
+	 * @param nowFilterChain
+	 * @throws Exception
+	 */
 	private void processFilterChain(Params params,FilterChain nowFilterChain) throws Exception{
         //标识要返回原来的过滤器链
 	    nowFilterChain.lastFilterChain=this;
 	    nowFilterChain.doFilter(params, nowFilterChain);
     }
 	
-	
+	/**
+	 * 处理过滤器
+	 * @param params
+	 * @param nowFilter
+	 * @throws Exception
+	 */
 	private void processFilter(Params params,Filter nowFilter)throws Exception{
 	  //判断当前要处理的是过滤器
 	    boolean isProcess=true;//是否要运行处理器的标识
@@ -76,11 +99,13 @@ public class FilterChain implements Filter{
             if(nowFilter instanceof CheckConfFilter){
                 CheckConfFilter checkConfFilter=(CheckConfFilter) nowFilter;
                 CheckConfFilter.Result result=checkConfFilter.validate(params);
-              if(result==CheckConfFilter.Result.skip){
+                if(result==null||result==CheckConfFilter.Result.success){
+                    logger.debug("检测正常");
+                }else if(result==CheckConfFilter.Result.skip){
                     isProcess=false;
                     logger.warn("配置项检测不合格,位于{}链中的过滤器{}将跳过运行,",this,nowFilter);
                 }else if(result==CheckConfFilter.Result.stop){
-                    logger.error("配置项检测不合格,位于{}链中的过滤器{}将导止运行停止,",this,nowFilter);
+                    logger.error("配置项检测不合格,位于{}链中的过滤器{}将导致运行停止,",this,nowFilter);
                     throw new RuntimeException("配置项检测不合格,停止运行");
                 }
                 
@@ -138,40 +163,11 @@ public class FilterChain implements Filter{
             return count;
         }
     }
-	
-	public static void main(String[] args) throws Exception {
-        FilterChain chain=new FilterChain();
-        chain.addFilter(new Filter<Params>() {
-
-            public void doFilter(Params params, FilterChain filterChain) throws Exception {
-                System.out.println("A");
-            }
-        });
-        chain.addFilter(new Filter<Params>() {
-
-            public void doFilter(Params params, FilterChain filterChain)throws Exception  {
-                System.out.println("B");
-            }
-        });
-        FilterChain chain2=new FilterChain();
-        chain2.addFilter(new Filter<Params>() {
-
-            public void doFilter(Params params, FilterChain filterChain) throws Exception {
-                System.out.println("C");
-            }
-        });
-        chain.addFilter(chain2);
-        chain.addFilter(new Filter<Params>() {
-
-            public void doFilter(Params params, FilterChain filterChain)throws Exception  {
-                System.out.println("D");
-            }
-        });
-        chain.doFilter(new Params(), chain);
-//        System.out.println(chain2.getFilterCount());
-        
+    public void setAutoDoFilter(boolean autoDoFilter) {
+        this.autoDoFilter = autoDoFilter;
     }
+   
 	
-	
+    
 
 }

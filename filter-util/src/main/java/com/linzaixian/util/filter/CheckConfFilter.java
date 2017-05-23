@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 /**
  * 需要检测配置的处理器
- * @author lzx
+ * @author linzaixian
  *
  */
 public abstract class CheckConfFilter<P extends Params> implements Filter{
@@ -54,7 +54,7 @@ public abstract class CheckConfFilter<P extends Params> implements Filter{
     }
 	/**
 	 * 检测配置项处理结果
-	 * @author lzx
+	 * @author linzaixain
 	 *
 	 */
 	public enum Result{
@@ -65,6 +65,10 @@ public abstract class CheckConfFilter<P extends Params> implements Filter{
 		/**
 		 * 跳过该处理器的运行
 		 */
-		skip
+		skip,
+		/**
+		 * 检测正常
+		 */
+		success
 	}
 }
