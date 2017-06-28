@@ -13,6 +13,7 @@
 		<module>javamail-util</module>
 		<module>db-meta-util</module>
 		<module>db-po-util</module>
+		<module>string-util</module>
 	</modules>
 	<properties>
 		<slf4j.version>1.7.21</slf4j.version>

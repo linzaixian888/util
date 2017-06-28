@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.linzaixian.util</groupId>
+    <artifactId>util</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>com.linzaixian.util.dbpo</groupId>
+  <artifactId>db-po-util</artifactId>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.linzaixian.util.dbmeta</groupId>
+  		<artifactId>db-meta-util</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.linzaixian.util.string</groupId>
+  		<artifactId>string-util</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
+</project>

@@ -9,8 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.linzaixian.util.dbmeta.DbMetaUtil;
-
+/**
+ * 
+ * @author linzaixians
+ * @since 2017-06-26 14:06:05
+ */
+import com.linzaixian.util.dbmeta.DbTypeEnum;
 public class Table {
+    private DbTypeEnum dbType;
 	private static final Logger logger=LoggerFactory.getLogger(Table.class);
 	/**
 	 * 列信息缓存
@@ -110,7 +116,14 @@ public class Table {
 	public void appendIndex(Index index){
 		indexes.add(index);
 	}
-	@Override
+	
+    public DbTypeEnum getDbType() {
+        return dbType;
+    }
+    public void setDbType(DbTypeEnum dbType) {
+        this.dbType = dbType;
+    }
+    @Override
 	public String toString() {
 		return "Table [tableName=" + tableName + ", idColumn=" + idColumn + ", remark=" + remark + ", columns="
 				+ columns + ", importedKeys=" + importedKeys + ", exportedKeys=" + exportedKeys + ", indexes=" + indexes

@@ -22,7 +22,11 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateNotFoundException;
 
 
-
+/**
+ * Freemarker工具类
+ * @author linzaixian
+ * @since 2017-06-02 15:56:26
+ */
 public class FreemarkerUtil {
 	private List<TemplateLoader> list=new ArrayList<TemplateLoader>();
 	private Configuration cfg;

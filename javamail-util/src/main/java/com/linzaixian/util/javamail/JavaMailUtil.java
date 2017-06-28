@@ -14,7 +14,7 @@ public class JavaMailUtil {
 	/**
 	 * 是否开启javamail的日志输出调试
 	 */
-	private static final boolean DEBUG=false;
+	private static final boolean DEBUG=true;
 	
 	private static final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 	private static final String PROTOCOL="smtp";
