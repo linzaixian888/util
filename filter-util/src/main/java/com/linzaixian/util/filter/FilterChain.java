@@ -121,9 +121,7 @@ public class FilterChain implements Filter{
             
         } catch (Exception e) {
             Logger filterLog=LoggerFactory.getLogger(nowFilter.getClass());
-            StringPrintWriter spw=new StringPrintWriter();
-            e.printStackTrace(spw);
-            filterLog.error("发生异常:{}",spw.getString());
+            filterLog.error("发生异常:{}",e);
             this.isSuccess=false;
             throw e;
         }

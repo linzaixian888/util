@@ -9,6 +9,7 @@ import com.linzaixian.util.dbpo.pojo.MyField;
 import com.linzaixian.util.string.StringUtil;
 
 /**
+ * 类以及属性的转化适配器
  * @author linzaixian
  * @since 2017-06-20 20:19:18 
  */

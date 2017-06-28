@@ -8,7 +8,11 @@ import com.linzaixian.util.dbmeta.pojo.Column;
 import com.linzaixian.util.dbmeta.pojo.Table;
 import com.linzaixian.util.dbpo.pojo.MyClass;
 import com.linzaixian.util.dbpo.pojo.MyField;
-
+/**
+ * 数据库元信息进一步处理的工具类
+ * @author linzaixian
+ * @since 2017-06-28 14:47:57
+ */
 public class DbPoUtil {
     private TranslateAdapter adapter=new DefaultTranslateAdapter();
 	private List<Table> tables;
