@@ -38,10 +38,11 @@ public class DbMetaUtil {
 		this.url = url;
 		this.username = username;
 		this.password = password;
-		if(schema!=null){
-		    //schema不为 null要转换为大写状态
-		    schema=schema.toUpperCase();
+		this.dbType=DbTypeEnum.getEnum(driver);
+		if(DbTypeEnum.ORACLE.equals(dbType)&&schema==null){
+		    schema=username.toUpperCase();
 		}
+		
 		this.schema = schema;
 		logger.debug("初始化,传递参数为driver:[{}],url:[{}],username:[{}],password:[{}],schema:[{}]",driver,url,username,password,schema);;
 	}
@@ -416,6 +417,9 @@ public class DbMetaUtil {
 
 
 
+    public DbTypeEnum getDbType() {
+        return dbType;
+    }
     public static void main(String[] args) throws Exception {
 //	    String driver="com.mysql.jdbc.Driver";
 //        String url="jdbc:mysql://121.43.170.94:3306/ipay?useUnicode=true&characterEncoding=utf8";

@@ -38,10 +38,10 @@ public  class DefaultTranslateAdapter extends AbstractTranslateAdapter{
     
     
     public String getClassName(String name,Table table){
-        return toWord(name.toLowerCase(), "_", true);
+        return firstUp(toWord(name.toLowerCase(), "_", true));
     }
     public String getFieldName(String name,Column column,Table table){
-        return toWord(name.toLowerCase(), "_", false);
+        return firstLow(toWord(name.toLowerCase(), "_", true));
     }
     
     
