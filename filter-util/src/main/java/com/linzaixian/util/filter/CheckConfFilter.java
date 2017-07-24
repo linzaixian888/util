@@ -27,8 +27,14 @@ public abstract class CheckConfFilter<P extends Params> implements Filter{
 		}
 		return null;
 	}
-	public Object getValue(String confName,P param){
-	    return param.get(confName);
+	public Object getValue(String confName,P params){
+	    try {
+	        Class<?> paramsClass=params.getClass();
+            Method m=paramsClass.getDeclaredMethod("get"+firstUp(confName), Object.class);
+            return (Result) m.invoke(params);
+        } catch (Exception e) {
+        }
+        return null;
 	}
 	
 	public Result validate(String confName,Object value) throws Exception{
@@ -45,12 +51,11 @@ public abstract class CheckConfFilter<P extends Params> implements Filter{
      * @return
      */
     public String firstUp(String str){
-        if(str==null||"".equals(str)){
-            return str;
-        }else{
-            String temp=str.substring(0,1);
-            return temp.toUpperCase()+str.substring(1);
-        }
+        char[] ch = str.toCharArray();  
+        if (ch[0] >= 'a' && ch[0] <= 'z') {  
+            ch[0] = (char) (ch[0] - 32);  
+        }  
+        return new String(ch);
     }
 	/**
 	 * 检测配置项处理结果

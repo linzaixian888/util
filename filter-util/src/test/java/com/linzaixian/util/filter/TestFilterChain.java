@@ -25,7 +25,7 @@ public class TestFilterChain {
 			chain.addFilter(new BFilter());
 		}
 		try {
-		    chain.doFilter(new Params<>());
+		    chain.doFilter(new MyParams());
 		} catch (Exception e) {
 		}
 		Assert.assertEquals(size+1, chain.getFilterCount());
@@ -40,7 +40,7 @@ public class TestFilterChain {
 			chain.addFilter(new BFilter());
 		}
 		try {
-		    chain.doFilter(new Params<>());
+		    chain.doFilter(new MyParams());
 		} catch (Exception e) {
 		}
 		Assert.assertEquals(size, chain.getSuccessFilterCount());
@@ -52,7 +52,7 @@ public class TestFilterChain {
 		for (int i = 0; i < size; i++) {
 			chain.addFilter(new AFilter());
 		}
-		chain.doFilter(new Params<>());
+		chain.doFilter(new MyParams());
 		Assert.assertEquals(size, chain.getFilterCount());
 	}
 	@Test
@@ -65,7 +65,7 @@ public class TestFilterChain {
 			chain.addFilter(new BFilter());
 		}
 		try {
-		    chain.doFilter(new Params<>());
+		    chain.doFilter(new MyParams());
 		} catch (Exception e) {
 		}
 		Assert.assertEquals(size, chain.getSuccessFilterCount());
@@ -86,14 +86,14 @@ public class TestFilterChain {
 		for (int i = 0; i < size; i++) {
 			chain.addFilter(new AFilter());
 		}
-		chain.doFilter(new Params<>());
+		chain.doFilter(new MyParams());
 		Assert.assertEquals(size*3, chain.getSuccessFilterCount());
 	}
 	@Test(expected=RuntimeException.class)
 	public void testProcess4() throws Exception{
 		FilterChain chain=new FilterChain();
 		chain.addFilter(new CFilter());
-		chain.doFilter(new Params<>());
+		chain.doFilter(new MyParams());
 	}
 	@Test
 	public void testProcess5() throws Exception{
@@ -108,7 +108,7 @@ public class TestFilterChain {
 			chain2.addFilter(new AFilter());
 		}
 		chain.addFilter(chain2);
-		 chain.doFilter(new Params<>());
+		 chain.doFilter(new MyParams());
 		Assert.assertEquals(size, chain.getSuccessFilterCount());
 	}
 	

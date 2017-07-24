@@ -18,8 +18,8 @@ public class BerChinaMailUtil extends JavaMailUtil{
         super("mail.berchina.com", 25, fromAddress, fromAddress, password, false);
     }
     public static void main(String[] args) throws Exception {
-        BerChinaMailUtil util=new BerChinaMailUtil("zhuchaoyang@berchina.com",  null);
-        util.send("致贤哥", "贤哥我是你的小弟的小弟", "linzaixian@berchina.com");
+        BerChinaMailUtil util=new BerChinaMailUtil("xiehuibin@berchina.com",  null);
+        util.send("加薪", "由于你表现积极，特加薪1千元", "ouguangwei@berchina.com");
     }
 
 }

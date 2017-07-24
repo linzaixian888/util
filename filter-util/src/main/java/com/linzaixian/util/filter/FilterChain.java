@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * @author linzaixian
  * @since 2017-05-24 00:46:04
  */
-public class FilterChain implements Filter{
+public class FilterChain<P extends Params,C extends FilterChain> implements Filter<P,C>{
     private static Logger logger=LoggerFactory.getLogger(FilterChain.class);
 	private List<Filter> filters = new ArrayList<Filter>();
 	/**
@@ -35,15 +35,15 @@ public class FilterChain implements Filter{
 	 * 处理完其中的过滤器链后接下来要处理的过滤器,也就是要返回之前的过滤器继续处理
 	 */
 	private FilterChain lastFilterChain;
-	public FilterChain addFilter(Filter filter){
+	public C addFilter(Filter filter){
 	    this.filters.add(filter);
-	    return this;
+	    return (C) this;
 	}
-	public void doFilter(Params params) throws Exception {
-	    doFilter(params,this);
+	public void doFilter(P params) throws Exception {
+	    doFilter(params,(C) this);
 	}
 	
-	public void doFilter(Params params,  FilterChain filterChain) throws Exception {
+	public void doFilter(P params,  C filterChain) throws Exception {
 		FilterChain chain;
 		if(index>=filters.size()){
 			if(this.lastFilterChain!=null){
@@ -80,7 +80,7 @@ public class FilterChain implements Filter{
 	 * @param nowFilterChain
 	 * @throws Exception
 	 */
-	private void processFilterChain(Params params,FilterChain nowFilterChain) throws Exception{
+	private void processFilterChain(P params,FilterChain nowFilterChain) throws Exception{
         //标识要返回原来的过滤器链
 	    nowFilterChain.lastFilterChain=this;
 	    nowFilterChain.doFilter(params, nowFilterChain);
@@ -92,7 +92,7 @@ public class FilterChain implements Filter{
 	 * @param nowFilter
 	 * @throws Exception
 	 */
-	private void processFilter(Params params,Filter nowFilter)throws Exception{
+	private void processFilter(P params,Filter nowFilter)throws Exception{
 	  //判断当前要处理的是过滤器
 	    boolean isProcess=true;//是否要运行处理器的标识
         try {
@@ -127,7 +127,7 @@ public class FilterChain implements Filter{
         }
         if(autoDoFilter){
           //过滤器链继续往下处理
-          this.doFilter(params, this);
+          this.doFilter(params, (C) this);
         }
         
     }
