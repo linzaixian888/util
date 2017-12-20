@@ -71,7 +71,7 @@ public class Column {
 	/**
 	 * ORDINAL_POSITION int => 表中的列的索引（从 1 开始） 
 	 */
-	private int ordinal_posuition;
+	private int ordinalPosuition;
 	/**
 	 * IS_NULLABLE String => ISO 规则用于确定列是否包括 null。 
 	 *	YES --- 如果参数可以包括 NULL 
@@ -183,11 +183,12 @@ public class Column {
 	public void setCharOctetLength(int charOctetLength) {
 		this.charOctetLength = charOctetLength;
 	}
-	public int getOrdinal_posuition() {
-		return ordinal_posuition;
+	
+	public int getOrdinalPosuition() {
+		return ordinalPosuition;
 	}
-	public void setOrdinal_posuition(int ordinal_posuition) {
-		this.ordinal_posuition = ordinal_posuition;
+	public void setOrdinalPosuition(int ordinalPosuition) {
+		this.ordinalPosuition = ordinalPosuition;
 	}
 	public String getIsNullable() {
 		return isNullable;
@@ -247,10 +248,11 @@ public class Column {
 				+ columnSize + ", bufferLength=" + bufferLength + ", decimalDigits=" + decimalDigits + ", numPrecRadix="
 				+ numPrecRadix + ", nullable=" + nullable + ", remarks=" + remarks + ", columnDef=" + columnDef
 				+ ", sqlDataType=" + sqlDataType + ", sqlDatetimeSub=" + sqlDatetimeSub + ", charOctetLength="
-				+ charOctetLength + ", ordinal_posuition=" + ordinal_posuition + ", isNullable=" + isNullable
+				+ charOctetLength + ", ordinalPosuition=" + ordinalPosuition + ", isNullable=" + isNullable
 				+ ", scopeCatlog=" + scopeCatlog + ", scopeSchema=" + scopeSchema + ", scopeTable=" + scopeTable
 				+ ", sourceDataType=" + sourceDataType + ", isAutoincrement=" + isAutoincrement + "]";
 	}
+	
 	
 	
 	

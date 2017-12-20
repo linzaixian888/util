@@ -179,7 +179,7 @@ public class DbMetaUtil {
         column.setRemarks(rs.getString("REMARKS"));
         column.setColumnDef(rs.getString("COLUMN_DEF"));
         column.setCharOctetLength(rs.getInt("CHAR_OCTET_LENGTH"));
-        column.setOrdinal_posuition(rs.getInt("ORDINAL_POSITION"));
+        column.setOrdinalPosuition(rs.getInt("ORDINAL_POSITION"));
         column.setIsNullable(rs.getString("IS_NULLABLE"));
         //获取SCOPE_CATLOG在mysql里面报错
 //      column.setScopeCatlog(rs.getString("SCOPE_CATLOG "));

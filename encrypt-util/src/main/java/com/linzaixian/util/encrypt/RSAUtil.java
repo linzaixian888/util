@@ -98,15 +98,18 @@ public class RSAUtil {
 		byte[] raw = new byte[outputSize * blocksSize];
 		int i = 0;
 		while (data.length - i * blockSize > 0) {
-			if (data.length - i * blockSize > blockSize)
+			if (data.length - i * blockSize > blockSize) {
 				cipher.doFinal(data, i * blockSize, blockSize, raw, i
 						* outputSize);
-			else
+			}
+				
+			else {
 				cipher.doFinal(data, i * blockSize,
 						data.length - i * blockSize, raw, i * outputSize);
 			// 这里面doUpdate方法不可用，查看源代码后发现每次doUpdate后并没有什么实际动作除了把byte[]放到
 			// ByteArrayOutputStream中，而最后doFinal的时候才将所有的byte[]进行加密，可是到了此时加密块大小很可能已经超出了
 			// OutputSize所以只好用dofinal方法。
+			}
 			i++;
 		}
 		return raw;

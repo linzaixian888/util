@@ -5,7 +5,14 @@ package com.linzaixian.util.dbmeta;
  * @since 2017-06-21 13:57:23 
  */
 public enum DbTypeEnum {
-    MYSQL(""),ORACLE("oracle.jdbc.driver.OracleDriver");
+	/**
+	 * mysql
+	 */
+    MYSQL("com.mysql.jdbc.Driver"),
+    /**
+     * oracle
+     */
+    ORACLE("oracle.jdbc.driver.OracleDriver");
     private String code;
 
     private DbTypeEnum(String code) {
