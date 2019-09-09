@@ -52,11 +52,10 @@ public class RSAJdkUtil {
 		this.publicKey = keyPair.getPublic();
 
 	}
+
 	/**
 	 * rsa加密
-	 * 
-	 * @param pk
-	 * @param data
+	 * @param mingwen
 	 * @return
 	 * @throws Exception
 	 */
@@ -71,6 +70,13 @@ public class RSAJdkUtil {
 		String miwen = c.toString();
 		return miwen;
 	}
+
+	/**
+	 * rsa解密
+	 * @param miwen
+	 * @return
+	 * @throws Exception
+	 */
 	private String decrypt(String miwen)throws Exception {
 		StringBuffer mingwen = new StringBuffer();
 		RSAPublicKey puk = (RSAPublicKey) publicKey;
