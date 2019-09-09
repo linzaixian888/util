@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-public class TestFilterChain {
+public class FilterChainTest {
 	FilterChain chain=null;
 	@Before
 	public void setUp(){
