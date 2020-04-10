@@ -24,6 +24,7 @@ public class SpringRedisLockTest {
         redisTemplate=new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisConnectionFactory);
         redisTemplate.setDefaultSerializer(new StringRedisSerializer());
+        //不在spring中初始化则需要手动调用此方法
         redisTemplate.afterPropertiesSet();
     }
     @Before

@@ -31,18 +31,33 @@ public class FreemarkerUtil {
 	private List<TemplateLoader> list=new ArrayList<TemplateLoader>();
 	private Configuration cfg;
 	private boolean isSetLoader=false;
-	private String suffix=null;
+	private String suffix;
 	private boolean isCloseStream=true;
-	
-	public FreemarkerUtil(){
-		initDefault();
+
+	/**
+	 * 创建构造器对象
+	 * @return
+	 */
+	public static FreemarkerUtilBuilder createBuilder(){
+		return FreemarkerUtilBuilder.create();
 	}
-	public FreemarkerUtil(Configuration configuration){
-		TemplateLoader templateLoader=configuration.getTemplateLoader();
+	private FreemarkerUtil(){
+		this.cfg=new Configuration(Configuration.getVersion());
+		this.cfg.setObjectWrapper(new DefaultObjectWrapper(Configuration.getVersion()));
+	}
+
+	private void setTemplateLoaderList(List<TemplateLoader> list) {
+		this.list = list;
+	}
+
+
+	public FreemarkerUtil(Configuration cfg){
+		TemplateLoader templateLoader=cfg.getTemplateLoader();
 		if(templateLoader!=null){
 			addTemplateLoader(templateLoader);
 		}
-		this.cfg=configuration;
+		this.cfg=cfg;
+
 		
 	}
 	
@@ -114,13 +129,6 @@ public class FreemarkerUtil {
 		}
 	}
 	/**
-	 * 某些初始化
-	 */
-	private void initDefault(){
-		cfg=new Configuration(Configuration.VERSION_2_3_23);
-		cfg.setObjectWrapper(new DefaultObjectWrapper(Configuration.VERSION_2_3_23));
-	}
-	/**
 	 * 增加一个加载器
 	 * @param templateLoader
 	 * @return
@@ -164,7 +172,7 @@ public class FreemarkerUtil {
 	 * 获得当前的多类型加载器
 	 * @return
 	 */
-	public MultiTemplateLoader getMultiTemplateLoader(){
+	private MultiTemplateLoader getMultiTemplateLoader(){
 		TemplateLoader[] loaders=new TemplateLoader[list.size()];
 		for(int i=0;i<list.size();i++){
 			loaders[i]=list.get(i);
@@ -214,13 +222,16 @@ public class FreemarkerUtil {
 	 * @throws TemplateException 
 	 */
 	public void process(Template t,Object rootMap,Writer out) throws IOException, TemplateException{
-		t.process(rootMap, out);
-		out.flush();
-		if(isCloseStream){
-			out.close();
+
+		try{
+			t.process(rootMap, out);
+		}finally {
+			if(isCloseStream&&out!=null) {
+				out.close();
+			}
 		}
-		
 	}
+
 	
 	/**
 	 * 模版处理数据
@@ -290,6 +301,87 @@ public class FreemarkerUtil {
 		}
 		Writer out=new FileWriter(file);
 		process(templateName, rootMap, out);
+	}
+
+	static class FreemarkerUtilBuilder{
+		private List<TemplateLoader> list=new ArrayList<TemplateLoader>();
+		private Configuration cfg;
+		private String suffix;
+		private boolean isCloseStream=true;
+		private FreemarkerUtilBuilder() {
+		}
+		public static FreemarkerUtilBuilder create(){
+			return new FreemarkerUtil.FreemarkerUtilBuilder();
+		}
+
+		public FreemarkerUtilBuilder setCfg(Configuration cfg) {
+			this.cfg = cfg;
+			return this;
+		}
+		public FreemarkerUtilBuilder addTemplateLoader(TemplateLoader templateLoader) {
+			list.add(templateLoader);
+			return this;
+		}
+
+		/**
+		 * 加入一个文件加载器
+		 * @param folderPath
+		 * @return
+		 * @throws IOException
+		 */
+		public FreemarkerUtilBuilder addFolderLoader(String folderPath) throws IOException{
+			return addFolderLoader(new File(folderPath));
+		}
+		/**
+		 * 加入一个文件夹加载器
+		 * @param folder
+		 * @return
+		 * @throws IOException
+		 */
+		public FreemarkerUtilBuilder addFolderLoader(File folder) throws IOException{
+			FileTemplateLoader fileTemplateLoader=new FileTemplateLoader(folder);
+			return addTemplateLoader(fileTemplateLoader);
+
+		}
+		/**
+		 * 加入一个类位置加载器
+		 * @param classType
+		 * @param prefix
+		 * @return
+		 */
+		public FreemarkerUtilBuilder addClassLoader(Class<?> classType,String prefix){
+			ClassTemplateLoader classTemplateLoader=new ClassTemplateLoader(classType, prefix);
+			return addTemplateLoader(classTemplateLoader);
+		}
+
+		public FreemarkerUtilBuilder setSuffix(String suffix) {
+			this.suffix = suffix;
+			return this;
+		}
+
+		/**
+		 * 设置是否自动关闭流
+		 * @param isCloseStream
+		 */
+		public FreemarkerUtilBuilder setIsCloseStream(boolean isCloseStream){
+			this.isCloseStream=isCloseStream;
+			return this;
+		}
+
+		public  FreemarkerUtil build(){
+			FreemarkerUtil util;
+			if(cfg==null){
+				util=new FreemarkerUtil();
+			}else{
+				util=new FreemarkerUtil(this.cfg);
+			}
+			util.setSuffix(this.suffix);
+			util.setTemplateLoaderList(this.list);
+			util.setIsCloseStream(this.isCloseStream);
+			util.flushLoader();
+			return util;
+		}
+
 	}
 	
 	
