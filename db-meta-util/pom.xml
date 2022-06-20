@@ -11,7 +11,7 @@
 	<properties>
 		<jdbc.driver.groupId>mysql</jdbc.driver.groupId>
 		<jdbc.driver.artifactId>mysql-connector-java</jdbc.driver.artifactId>
-		<jdbc.driver.version>6.0.4</jdbc.driver.version>
+		<jdbc.driver.version>8.0.28</jdbc.driver.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.40</version>
+			<version>8.0.28</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
